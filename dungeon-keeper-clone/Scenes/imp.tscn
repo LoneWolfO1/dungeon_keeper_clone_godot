@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cwn16cgaxcnyx"]
+
+[ext_resource type="Script" uid="uid://c5w2s15ap7tot" path="res://Scripts/creature.gd" id="1_y0j3q"]
+[ext_resource type="Resource" uid="uid://dord7rh7tqcsd" path="res://Resources/imp.tres" id="2_l4yk4"]
+[ext_resource type="Texture2D" uid="uid://b54qo6fv7msy1" path="res://Textures/atlas.png" id="2_y0j3q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5ukr8"]
+atlas = ExtResource("2_y0j3q")
+region = Rect2(64, 0, 31.807312, 31.80732)
+
+[node name="Imp" type="Node2D" unique_id=661124751]
+script = ExtResource("1_y0j3q")
+type = ExtResource("2_l4yk4")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=385240627]
+texture_filter = 1
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_5ukr8")

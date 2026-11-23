@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://1jjwrf6d0lbt"]
+
+[ext_resource type="Script" uid="uid://d0xd2egjyrxgn" path="res://Scripts/world.gd" id="1_5a7ea"]
+[ext_resource type="Resource" uid="uid://c54lgxcqxdpcg" path="res://Resources/rock.tres" id="2_8j60k"]
+[ext_resource type="Resource" uid="uid://csp6aa4brrmkp" path="res://Resources/dug_floor.tres" id="3_fo5ed"]
+[ext_resource type="PackedScene" uid="uid://cwn16cgaxcnyx" path="res://Scenes/imp.tscn" id="4_5ukr8"]
+[ext_resource type="Texture2D" uid="uid://b54qo6fv7msy1" path="res://Textures/atlas.png" id="4_8j60k"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fo5ed"]
+texture = ExtResource("4_8j60k")
+texture_region_size = Vector2i(32, 32)
+0:1/0 = 0
+0:0/0 = 0
+1:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_x80ey"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_fo5ed")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5ukr8"]
+texture = ExtResource("4_8j60k")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_uohhj"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_5ukr8")
+
+[node name="World" type="Node2D" unique_id=1621467651]
+script = ExtResource("1_5a7ea")
+imp_scene = ExtResource("4_5ukr8")
+rock = ExtResource("2_8j60k")
+dug_floor = ExtResource("3_fo5ed")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=632783675]
+tile_set = SubResource("TileSet_x80ey")
+
+[node name="MarkLayer" type="TileMapLayer" parent="." unique_id=645896994]
+tile_set = SubResource("TileSet_uohhj")

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TileType" format=3 uid="uid://csp6aa4brrmkp"]
+
+[ext_resource type="Script" uid="uid://b6ey4w36rkbit" path="res://Scripts/tile_type.gd" id="1_vgfdw"]
+
+[resource]
+script = ExtResource("1_vgfdw")
+walkable = true
+metadata/_custom_type_script = "uid://b6ey4w36rkbit"
