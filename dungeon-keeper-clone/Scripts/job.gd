@@ -2,7 +2,7 @@ class_name Job
 extends RefCounted
 
 var cell: Vector2i
-var max_workers: int = 5
+var max_workers: int = 2
 var workers: Array[Creature] = []
 
 func has_free_slot() -> bool:

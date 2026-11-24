@@ -24,6 +24,9 @@ func conv_to_map(pos)-> Vector2i:
 func conv_to_local(pos) -> Vector2:
 	return tile_map.to_local(pos)
 
+func release_workers(job: Job):
+	job.workers.clear()
+
 # ==================== Start ====================
 
 
@@ -145,18 +148,17 @@ func cell_select(cell: Vector2i) -> void:
 
 
 func cell_deselect(cell: Vector2i):
-	if(is_inside(cell)):
-		var tile = grid[cell.x][cell.y] 
-		jobs.erase(cell)
-		mark_layer.erase_cell(cell)
-		tile.marked = false 
-		for imp in get_tree().get_nodes_in_group("imps"):
-			if (not imp.is_idle() and imp.new_target == cell):
-				imp.path_array = []
-				give_work(imp)
+	if not is_inside(cell) or not jobs.has(cell):
+		return
+	var tile = grid[cell.x][cell.y] 
+	var job: Job = jobs[cell]
+	jobs.erase(cell)
+	mark_layer.erase_cell(cell)
+	tile.marked = false 
+	release_workers(job)
 
 
-# ==================== Imps ====================
+# ==================== Creatures ====================
 
 
 func get_best_path(inicial_pos: Vector2i,selected_pos: Vector2i) -> PackedVector2Array:
@@ -217,20 +219,26 @@ func find_job(creature_position: Vector2i ) -> Job:
 			closest_target = job
 	return closest_target
 
-
-func on_creature_arrived(target_position: Vector2i) -> void:
-	var cell := target_position
+func on_creature_arrived(creature: Creature) -> void:
+	var job:Job = creature.job
+	if job == null:
+		return
+	var cell := job.cell
 	var tile = grid[cell.x][cell.y] 
+	tile.marked = false
 	tile.type = dug_floor
-	tile.marked = false 
-	jobs.erase(cell)
 	update_selected_mark(cell.x,cell.y)
 	tile_map.set_cell(cell, 0, Vector2i(0, 0))
 	astar.set_point_solid(cell,false)
-	for other in get_tree().get_nodes_in_group("imps"):
-		if other.new_target == target_position:
-			other.path_array = []
-			give_work(other)
+	jobs.erase(cell)
+	for worker in job.workers.duplicate():
+		worker.job = null
+		worker.path_array = []
+		give_work(worker)
+	release_workers(job)
+
+
+
 
 func give_work_to_all():
 	for imp in get_tree().get_nodes_in_group("imps"):
