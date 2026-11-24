@@ -25,6 +25,10 @@ func conv_to_local(pos) -> Vector2:
 	return tile_map.to_local(pos)
 
 func release_workers(job: Job):
+	for worker in job.workers.duplicate():
+		worker.job = null
+		worker.path_array = []
+		give_work(worker)
 	job.workers.clear()
 
 # ==================== Start ====================
@@ -127,15 +131,6 @@ func build_astar() -> void:
 
 # ==================== Select ====================
 
-func mark_area(start: Vector2i,end: Vector2i):
-	var range_x = range(min(start.x,end.x),max(end.x,start.x)+1)
-	var range_y = range(min(start.y,end.y),max(end.y,start.y)+1)
-	for x in range_x:
-		for y in range_y:
-			cell_select(Vector2i(x, y))
-	give_work_to_all()
-
-
 func cell_select(cell: Vector2i) -> void:
 	if (is_inside(cell)):
 		var tile = grid[cell.x][cell.y] 
@@ -146,6 +141,13 @@ func cell_select(cell: Vector2i) -> void:
 			job.cell = cell
 			jobs[cell] = job
 
+func mark_area(start: Vector2i,end: Vector2i):
+	var range_x = range(min(start.x,end.x),max(end.x,start.x)+1)
+	var range_y = range(min(start.y,end.y),max(end.y,start.y)+1)
+	for x in range_x:
+		for y in range_y:
+			cell_select(Vector2i(x, y))
+	give_work_to_all()
 
 func cell_deselect(cell: Vector2i):
 	if not is_inside(cell) or not jobs.has(cell):
@@ -156,6 +158,13 @@ func cell_deselect(cell: Vector2i):
 	mark_layer.erase_cell(cell)
 	tile.marked = false 
 	release_workers(job)
+
+func deselect_area(start: Vector2i,end: Vector2i):
+	var range_x = range(min(start.x,end.x),max(end.x,start.x)+1)
+	var range_y = range(min(start.y,end.y),max(end.y,start.y)+1)
+	for x in range_x:
+		for y in range_y:
+			cell_deselect(Vector2i(x, y))
 
 
 # ==================== Creatures ====================
@@ -211,11 +220,9 @@ func find_job(creature_position: Vector2i ) -> Job:
 	for job in jobs.values():
 		if(!job.has_free_slot()):
 			continue
-		var path = get_best_path(creature_position,job.cell)
-		if (path.is_empty()):
-			continue
-		if (shortest_path == 0 or path.size() <= shortest_path):
-			shortest_path = path.size()
+		var target_creature_distance = creature_position.distance_squared_to(job.cell)
+		if (shortest_path == 0 or target_creature_distance <= shortest_path):
+			shortest_path = target_creature_distance
 			closest_target = job
 	return closest_target
 
@@ -231,10 +238,6 @@ func on_creature_arrived(creature: Creature) -> void:
 	tile_map.set_cell(cell, 0, Vector2i(0, 0))
 	astar.set_point_solid(cell,false)
 	jobs.erase(cell)
-	for worker in job.workers.duplicate():
-		worker.job = null
-		worker.path_array = []
-		give_work(worker)
 	release_workers(job)
 
 

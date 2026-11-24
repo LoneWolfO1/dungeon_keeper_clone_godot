@@ -24,7 +24,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				pressed = true
 			else:
 				pressed = false
-				world.mark_area(world.conv_to_map(start_selection), world.conv_to_map(end_selection))
+				if not event.shift_pressed:
+					world.mark_area(world.conv_to_map(start_selection), world.conv_to_map(end_selection))
+				else:
+					world.deselect_area(world.conv_to_map(start_selection), world.conv_to_map(end_selection))
 			queue_redraw()
 	if event is InputEventMouseMotion and pressed:
 		end_selection = get_global_mouse_position()
